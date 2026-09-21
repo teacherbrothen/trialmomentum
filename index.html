@@ -15,36 +15,71 @@
       padding: 24px 16px;
     }
 
+    /* Main Container: ~1040px wide */
     .card {
       background: #ffffff;
       width: 100%;
-      max-width: 680px;
+      max-width: 1040px;
       border-radius: 18px;
       border: 1px solid #e2e8f0;
-      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.03);
+      box-shadow: 0 12px 30px -6px rgba(0, 0, 0, 0.06), 0 8px 12px -6px rgba(0, 0, 0, 0.04);
       padding: 24px 28px;
     }
 
+    /* Header & Scoreboard */
+    .header-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      border-bottom: 2px solid #f1f5f9;
+      padding-bottom: 14px;
+      margin-bottom: 18px;
+    }
+
     h1 {
-      font-size: 1.55rem;
+      font-size: 1.45rem;
       font-weight: 800;
-      text-align: center;
-      color: #1e293b;
-      margin-bottom: 8px;
+      color: #0f172a;
     }
 
     .scoreboard {
       display: flex;
-      justify-content: center;
-      gap: 32px;
-      font-size: 1.15rem;
+      align-items: center;
+      gap: 20px;
+      font-size: 1.05rem;
       font-weight: 800;
-      margin-bottom: 16px;
     }
     .score-correct { color: #16a34a; }
-    .score-incorrect { color: #ea580c; }
+    .score-incorrect { color: #dc2626; }
 
-    /* Canvas Stage Box */
+    .stage-badge {
+      background: #e0f2fe;
+      color: #0369a1;
+      border: 1px solid #bae6fd;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 0.8rem;
+      font-weight: 800;
+      letter-spacing: 0.02em;
+    }
+
+    /* Two-Column Grid */
+    .main-grid {
+      display: grid;
+      grid-template-columns: 440px 1fr;
+      gap: 24px;
+      align-items: start;
+    }
+
+    @media (max-width: 900px) {
+      .main-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Left Column: Stage Box & Canvas */
     .stage-box {
       position: relative;
       background: #f8fafc;
@@ -52,25 +87,14 @@
       border-radius: 14px;
       overflow: hidden;
       display: flex;
-      justify-content: center;
+      flex-direction: column;
       align-items: center;
-      padding: 8px;
-    }
-
-    .problem-id {
-      position: absolute;
-      top: 10px;
-      right: 14px;
-      font-size: 0.75rem;
-      font-family: monospace;
-      color: #94a3b8;
-      font-weight: 600;
-      user-select: none;
+      padding: 12px;
     }
 
     svg {
       width: 100%;
-      max-width: 440px;
+      max-width: 410px;
       height: 400px;
       touch-action: none;
       user-select: none;
@@ -80,7 +104,7 @@
     .grid-circle { fill: none; stroke: #e2e8f0; stroke-width: 1; }
     .axis-line { stroke: #cbd5e1; stroke-width: 1.5; stroke-dasharray: 4 4; }
     .origin-dot { fill: #64748b; }
-    .compass-label { font-size: 11px; fill: #94a3b8; font-weight: 700; text-anchor: middle; dominant-baseline: central; }
+    .compass-label { font-size: 12px; fill: #94a3b8; font-weight: 800; text-anchor: middle; dominant-baseline: central; }
 
     /* Arrows */
     .arrow-line { stroke-width: 4; stroke-linecap: round; }
@@ -111,58 +135,153 @@
     .handle-b { stroke: #9333ea; }
     .handle-c { stroke: #ea580c; }
 
-    /* Live HUD */
-    .hud-box {
-      position: absolute;
-      bottom: 12px;
-      left: 14px;
-      background: rgba(255, 255, 255, 0.95);
-      border: 1px solid #e2e8f0;
-      border-radius: 8px;
-      padding: 6px 12px;
-      font-size: 0.85rem;
-      font-weight: 700;
-      color: #0369a1;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.04);
-      pointer-events: none;
+    /* Right Column Content */
+    .meta-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
     }
 
-    /* Problem Description */
+    .problem-id {
+      font-size: 0.75rem;
+      font-family: monospace;
+      color: #94a3b8;
+      font-weight: 600;
+    }
+
     .stem-card {
-      background: #f1f5f9;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
       border-radius: 10px;
-      padding: 14px 18px;
-      margin-top: 14px;
-      font-size: 1rem;
-      line-height: 1.5;
+      padding: 14px 16px;
+      font-size: 0.98rem;
+      line-height: 1.6;
       color: #1e293b;
+      margin-bottom: 12px;
+    }
+
+    .nowrap {
+      white-space: nowrap;
     }
 
     /* Peach Instruction Banner */
     .instruction-banner {
       background: #ffedd5;
       color: #9a3412;
+      border: 1px solid #fed7aa;
       border-radius: 10px;
-      padding: 12px 16px;
-      font-size: 0.95rem;
+      padding: 10px 14px;
+      font-size: 0.9rem;
       font-weight: 700;
-      text-align: center;
-      margin: 14px 0;
-      line-height: 1.4;
+      line-height: 1.45;
+      margin-bottom: 14px;
+    }
+
+    /* Calculations Form Card */
+    .calc-card {
+      background: #ffffff;
+      border: 1px solid #cbd5e1;
+      border-radius: 10px;
+      padding: 14px 16px;
+      margin-bottom: 14px;
+    }
+
+    .calc-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .calc-title {
+      font-size: 0.92rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: #475569;
+    }
+
+    .unit-toolbar {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn-dot {
+      background: #0284c7;
+      color: #ffffff;
+      border: none;
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 1rem;
+      font-weight: 900;
+      cursor: pointer;
+      line-height: 1;
+      transition: background 0.15s;
+    }
+    .btn-dot:hover { background: #0369a1; }
+
+    .unit-tip {
+      font-size: 0.75rem;
+      color: #64748b;
+      font-weight: 600;
+    }
+
+    .inputs-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+    .full-width { grid-column: 1 / -1; }
+
+    .input-group {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .input-group label {
+      font-size: 0.8rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .label-blue { color: #0284c7; }
+    .label-purple { color: #9333ea; }
+    .label-orange { color: #ea580c; }
+
+    .input-group input {
+      padding: 8px 10px;
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      outline: none;
+      transition: border 0.15s, box-shadow 0.15s;
+    }
+    .input-group input:focus {
+      border-color: #0284c7;
+      box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.15);
+    }
+    .input-group input.field-warn {
+      border-color: #f59e0b;
+      background: #fffbeb;
     }
 
     /* Buttons & Feedback */
     .actions {
       display: flex;
-      gap: 12px;
-      margin-top: 16px;
+      gap: 10px;
+      margin-top: 10px;
     }
 
-    button {
+    button.action-btn {
       flex: 1;
-      padding: 12px 20px;
+      padding: 11px 18px;
       border-radius: 8px;
-      font-size: 1rem;
+      font-size: 0.98rem;
       font-weight: 700;
       border: none;
       cursor: pointer;
@@ -175,12 +294,27 @@
     .btn-try { background: #64748b; color: white; }
     .btn-try:hover { background: #475569; }
 
+    /* Warning Card (Opportunity to correct without penalty) */
+    .warning-card {
+      display: none;
+      margin-top: 12px;
+      padding: 12px 14px;
+      border-radius: 8px;
+      background: #fef3c7;
+      color: #92400e;
+      border: 1px solid #fcd34d;
+      font-size: 0.88rem;
+      line-height: 1.45;
+      animation: fadeIn 0.15s ease-in-out;
+    }
+
+    /* Feedback Card */
     .feedback-card {
       display: none;
-      margin-top: 14px;
-      padding: 14px 18px;
-      border-radius: 10px;
-      font-size: 0.95rem;
+      margin-top: 12px;
+      padding: 12px 16px;
+      border-radius: 8px;
+      font-size: 0.92rem;
       line-height: 1.5;
       animation: fadeIn 0.2s ease-in-out;
     }
@@ -196,104 +330,133 @@
 <body>
 
   <div class="card">
-    <h1>Conservation of Momentum: 2D Explosions</h1>
-    
-    <div class="scoreboard">
-      <span class="score-correct">Correct: <span id="lblCorrect">0</span></span>
-      <span class="score-incorrect">Incorrect: <span id="lblIncorrect">0</span></span>
+    <div class="header-row">
+      <div>
+        <h1>Conservation of Momentum: 2D Explosions</h1>
+      </div>
+      <div class="scoreboard">
+        <span class="stage-badge" id="lblStageBadge">Stage 1: Vector Balancing</span>
+        <span class="score-correct">Correct: <span id="lblCorrect">0</span></span>
+        <span class="score-incorrect">Incorrect: <span id="lblIncorrect">0</span></span>
+      </div>
     </div>
 
-    <div class="stage-box">
-      <div class="problem-id" id="lblProblemId">ID: 84920195</div>
-      
-      <svg id="svgCanvas" viewBox="-200 -200 400 400">
-        <defs>
-          <!-- Arrow Markers -->
-          <marker id="arrow-a" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
-            <path d="M 0 1.5 L 10 5 L 0 8.5 z" fill="#0284c7" />
-          </marker>
-          <marker id="arrow-b" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
-            <path d="M 0 1.5 L 10 5 L 0 8.5 z" fill="#9333ea" />
-          </marker>
-          <marker id="arrow-c" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
-            <path d="M 0 1.5 L 10 5 L 0 8.5 z" fill="#ea580c" />
-          </marker>
+    <div class="main-grid">
+      <!-- Left Column: Vector Interactive Stage -->
+      <div>
+        <div class="stage-box">
+          <svg id="svgCanvas" viewBox="-200 -200 400 400">
+            <defs>
+              <!-- Arrow Markers -->
+              <marker id="arrow-a" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                <path d="M 0 1.5 L 10 5 L 0 8.5 z" fill="#0284c7" />
+              </marker>
+              <marker id="arrow-b" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                <path d="M 0 1.5 L 10 5 L 0 8.5 z" fill="#9333ea" />
+              </marker>
+              <marker id="arrow-c" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                <path d="M 0 1.5 L 10 5 L 0 8.5 z" fill="#ea580c" />
+              </marker>
 
-          <!-- Ghost Markers -->
-          <marker id="ghost-a" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
-            <path d="M 0 1.5 L 10 5 L 0 8.5 z" fill="#0284c7" opacity="0.6"/>
-          </marker>
-          <marker id="ghost-b" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
-            <path d="M 0 1.5 L 10 5 L 0 8.5 z" fill="#9333ea" opacity="0.6"/>
-          </marker>
-          <marker id="ghost-c" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
-            <path d="M 0 1.5 L 10 5 L 0 8.5 z" fill="#ea580c" opacity="0.6"/>
-          </marker>
-        </defs>
+              <!-- Ghost Markers -->
+              <marker id="ghost-a" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                <path d="M 0 1.5 L 10 5 L 0 8.5 z" fill="#0284c7" opacity="0.6"/>
+              </marker>
+              <marker id="ghost-b" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                <path d="M 0 1.5 L 10 5 L 0 8.5 z" fill="#9333ea" opacity="0.6"/>
+              </marker>
+              <marker id="ghost-c" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                <path d="M 0 1.5 L 10 5 L 0 8.5 z" fill="#ea580c" opacity="0.6"/>
+              </marker>
+            </defs>
 
-        <!-- Subtle Concentric Grid -->
-        <circle cx="0" cy="0" r="50" class="grid-circle" />
-        <circle cx="0" cy="0" r="100" class="grid-circle" />
-        <circle cx="0" cy="0" r="150" class="grid-circle" />
+            <!-- Grid Circles -->
+            <circle cx="0" cy="0" r="50" class="grid-circle" />
+            <circle cx="0" cy="0" r="100" class="grid-circle" />
+            <circle cx="0" cy="0" r="150" class="grid-circle" />
 
-        <!-- Axes -->
-        <line x1="-185" y1="0" x2="185" y2="0" class="axis-line" />
-        <line x1="0" y1="-185" x2="0" y2="185" class="axis-line" />
-        
-        <!-- Compass Labels -->
-        <text x="188" y="0" class="compass-label">E</text>
-        <text x="-188" y="0" class="compass-label">W</text>
-        <text x="0" y="-188" class="compass-label">N</text>
-        <text x="0" y="188" class="compass-label">S</text>
+            <!-- Axes -->
+            <line x1="-185" y1="0" x2="185" y2="0" class="axis-line" />
+            <line x1="0" y1="-185" x2="0" y2="185" class="axis-line" />
+            
+            <!-- Compass Labels -->
+            <text x="188" y="0" class="compass-label">E</text>
+            <text x="-188" y="0" class="compass-label">W</text>
+            <text x="0" y="-188" class="compass-label">N</text>
+            <text x="0" y="188" class="compass-label">S</text>
 
-        <!-- Ghost Component Bars & Drop Lines for the Blue Piece -->
-        <line id="compBarX" x1="0" y1="0" x2="0" y2="0" class="comp-bar" />
-        <line id="compBarY" x1="0" y1="0" x2="0" y2="0" class="comp-bar" />
-        <line id="projLineX" x1="0" y1="0" x2="0" y2="0" class="comp-proj" />
-        <line id="projLineY" x1="0" y1="0" x2="0" y2="0" class="comp-proj" />
+            <!-- Ghost Component Bars & Drop Lines -->
+            <line id="compBarX" x1="0" y1="0" x2="0" y2="0" class="comp-bar" />
+            <line id="compBarY" x1="0" y1="0" x2="0" y2="0" class="comp-bar" />
+            <line id="projLineX" x1="0" y1="0" x2="0" y2="0" class="comp-proj" />
+            <line id="projLineY" x1="0" y1="0" x2="0" y2="0" class="comp-proj" />
 
-        <!-- Reference Angle Arc & Label -->
-        <path id="angleArc" d="" class="angle-arc" />
-        <text id="angleLabel" x="0" y="0" class="angle-label"></text>
+            <!-- Reference Angle Arc & Label -->
+            <path id="angleArc" d="" class="angle-arc" />
+            <text id="angleLabel" x="0" y="0" class="angle-label"></text>
 
-        <!-- Ghost Target Vectors (Shown upon Check) -->
-        <line id="ghostA" x1="0" y1="0" x2="0" y2="0" class="ghost-line vec-a" marker-end="url(#ghost-a)" display="none" />
-        <line id="ghostB" x1="0" y1="0" x2="0" y2="0" class="ghost-line vec-b" marker-end="url(#ghost-b)" display="none" />
-        <line id="ghostC" x1="0" y1="0" x2="0" y2="0" class="ghost-line vec-c" marker-end="url(#ghost-c)" display="none" />
+            <!-- Ghost Target Vectors -->
+            <line id="ghostA" x1="0" y1="0" x2="0" y2="0" class="ghost-line vec-a" marker-end="url(#ghost-a)" display="none" />
+            <line id="ghostB" x1="0" y1="0" x2="0" y2="0" class="ghost-line vec-b" marker-end="url(#ghost-b)" display="none" />
+            <line id="ghostC" x1="0" y1="0" x2="0" y2="0" class="ghost-line vec-c" marker-end="url(#ghost-c)" display="none" />
 
-        <!-- Student Vectors -->
-        <!-- Blue Piece: Diagonal (Fixed scale length) -->
-        <line id="vecA" x1="0" y1="0" x2="0" y2="140" class="arrow-line vec-a" marker-end="url(#arrow-a)" />
-        <circle id="handleA" cx="0" cy="140" r="7.5" class="handle handle-a" />
+            <!-- Student Interactive Vectors -->
+            <line id="vecA" x1="0" y1="0" x2="0" y2="140" class="arrow-line vec-a" marker-end="url(#arrow-a)" />
+            <circle id="handleA" cx="0" cy="140" r="7.5" class="handle handle-a" />
 
-        <!-- Purple Piece: Vertical (Stretchable) -->
-        <line id="vecB" x1="0" y1="0" x2="-43" y2="-25" class="arrow-line vec-b" marker-end="url(#arrow-b)" />
-        <circle id="handleB" cx="-43" cy="-25" r="7.5" class="handle handle-b" />
+            <line id="vecB" x1="0" y1="0" x2="-43" y2="-25" class="arrow-line vec-b" marker-end="url(#arrow-b)" />
+            <circle id="handleB" cx="-43" cy="-25" r="7.5" class="handle handle-b" />
 
-        <!-- Orange Piece: Horizontal (Stretchable) -->
-        <line id="vecC" x1="0" y1="0" x2="43" y2="-25" class="arrow-line vec-c" marker-end="url(#arrow-c)" />
-        <circle id="handleC" cx="43" cy="-25" r="7.5" class="handle handle-c" />
+            <line id="vecC" x1="0" y1="0" x2="43" y2="-25" class="arrow-line vec-c" marker-end="url(#arrow-c)" />
+            <circle id="handleC" cx="43" cy="-25" r="7.5" class="handle handle-c" />
 
-        <!-- Origin Dot -->
-        <circle cx="0" cy="0" r="4.5" class="origin-dot" />
-      </svg>
+            <circle cx="0" cy="0" r="4.5" class="origin-dot" />
+          </svg>
+        </div>
+      </div>
 
-      <div class="hud-box" id="hudA">Blue piece angle: 90°</div>
+      <!-- Right Column: Problem, Inputs, & Controls -->
+      <div>
+        <div class="meta-row">
+          <div class="problem-id" id="lblProblemId">ID: --------</div>
+          <div id="lblStageProgress" style="font-size:0.8rem; font-weight:700; color:#64748b;">Stage Progress: 0/2</div>
+        </div>
+
+        <div class="stem-card" id="lblStem">Loading problem...</div>
+
+        <div class="instruction-banner" id="lblInstruction">
+          Aim the blue piece to the specified angle. Use its dashed component guides to scale and balance the other pieces within 80% accuracy.
+        </div>
+
+        <!-- Calculations Card (Visible in Stage 2 and Stage 3) -->
+        <div class="calc-card" id="calcCard" style="display: none;">
+          <div class="calc-header">
+            <span class="calc-title" id="calcTitle">Calculations (nearest 0.1)</span>
+            <div class="unit-toolbar">
+              <span class="unit-tip">Insert unit dot:</span>
+              <button type="button" class="btn-dot" id="btnDot" title="Click to insert ⋅ symbol">⋅</button>
+            </div>
+          </div>
+
+          <div class="inputs-grid" id="inputsGrid">
+            <!-- Dynamic fields inserted by JS -->
+          </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="actions">
+          <button class="action-btn btn-check" id="btnCheck">Check Solution</button>
+          <button class="action-btn btn-try" id="btnTryAgain" style="display:none;">Try Again</button>
+          <button class="action-btn btn-next" id="btnNext" style="display:none;">Next Problem</button>
+        </div>
+
+        <!-- Unit & Rounding Warning Card (Does not count against score) -->
+        <div class="warning-card" id="warningCard"></div>
+
+        <!-- Feedback Card -->
+        <div class="feedback-card" id="feedbackCard"></div>
+      </div>
     </div>
-
-    <div class="stem-card" id="lblStem">Loading problem...</div>
-
-    <div class="instruction-banner">
-      Aim the blue piece to the specified angle. Use its ghost component guides to scale and balance the other pieces within 80% accuracy.
-    </div>
-
-    <div class="actions">
-      <button class="btn-check" id="btnCheck">Check Diagram</button>
-      <button class="btn-try" id="btnTryAgain" style="display:none;">Try Again</button>
-      <button class="btn-next" id="btnNext" style="display:none;">Next Problem</button>
-    </div>
-
-    <div class="feedback-card" id="feedbackCard"></div>
   </div>
 
   <script>
@@ -301,12 +464,16 @@
     const SNAP_TOLERANCE_DEG = 12;
     const ARC_RADIUS = 38;
 
+    // Progression state
+    let stage = 1; 
+    let stageCorrectInRow = 0;
     let correctCount = 0;
     let incorrectCount = 0;
     let currentProblem = null;
     let attemptLogged = false;
+    let lastFocusedInput = null;
 
-    // Vectors State (SVG coordinates: +x = East, +y = South)
+    // Vector state (SVG coords: +x = East, +y = South)
     let stateA = { angleRad: Math.PI / 2 };
     let stateB = { x: -43, y: -25 };
     let stateC = { x: 43, y: -25 };
@@ -314,7 +481,7 @@
 
     // DOM Elements
     const svg = document.getElementById('svgCanvas');
-    const vecA = document.getElementById('vecA'), handleA = document.getElementById('handleA'), hudA = document.getElementById('hudA');
+    const vecA = document.getElementById('vecA'), handleA = document.getElementById('handleA');
     const vecB = document.getElementById('vecB'), handleB = document.getElementById('handleB');
     const vecC = document.getElementById('vecC'), handleC = document.getElementById('handleC');
     const compBarX = document.getElementById('compBarX'), compBarY = document.getElementById('compBarY');
@@ -323,8 +490,12 @@
     const ghostA = document.getElementById('ghostA'), ghostB = document.getElementById('ghostB'), ghostC = document.getElementById('ghostC');
     const lblStem = document.getElementById('lblStem'), lblProblemId = document.getElementById('lblProblemId');
     const lblCorrect = document.getElementById('lblCorrect'), lblIncorrect = document.getElementById('lblIncorrect');
+    const lblStageBadge = document.getElementById('lblStageBadge'), lblStageProgress = document.getElementById('lblStageProgress');
+    const lblInstruction = document.getElementById('lblInstruction');
+    const calcCard = document.getElementById('calcCard'), inputsGrid = document.getElementById('inputsGrid');
     const btnCheck = document.getElementById('btnCheck'), btnTryAgain = document.getElementById('btnTryAgain'), btnNext = document.getElementById('btnNext');
-    const feedbackCard = document.getElementById('feedbackCard');
+    const btnDot = document.getElementById('btnDot');
+    const feedbackCard = document.getElementById('feedbackCard'), warningCard = document.getElementById('warningCard');
 
     const QUAD_CONFIGS = [
       { name: "N of E", xSign: 1,  ySign: -1, bDir: "South", cDir: "West" },
@@ -333,29 +504,84 @@
       { name: "S of W", xSign: -1, ySign: 1,  bDir: "North", cDir: "East" }
     ];
 
+    // Dedicated dot button: insert ⋅ at cursor in last focused text input
+    btnDot.addEventListener('click', () => {
+      if (!lastFocusedInput) {
+        const first = inputsGrid.querySelector('input');
+        if (first) lastFocusedInput = first;
+      }
+      if (lastFocusedInput) {
+        lastFocusedInput.focus();
+        const start = lastFocusedInput.selectionStart || 0;
+        const end = lastFocusedInput.selectionEnd || 0;
+        const val = lastFocusedInput.value;
+        lastFocusedInput.value = val.substring(0, start) + "⋅" + val.substring(end);
+        lastFocusedInput.selectionStart = lastFocusedInput.selectionEnd = start + 1;
+      }
+    });
+
     function initProblem() {
       attemptLogged = false;
       feedbackCard.style.display = 'none';
+      warningCard.style.display = 'none';
       btnCheck.style.display = 'block';
       btnTryAgain.style.display = 'none';
       btnNext.style.display = 'none';
       hideGhosts();
 
+      // Update stage badge and progress
+      if (stage === 1) {
+        lblStageBadge.textContent = "Stage 1: Vector Balancing";
+        lblInstruction.innerHTML = "Aim the blue piece to the specified angle. Use its dashed component guides to scale and balance the other pieces within 80% accuracy.";
+        calcCard.style.display = 'none';
+      } else if (stage === 2) {
+        lblStageBadge.textContent = "Stage 2: Momentum Components";
+        lblInstruction.innerHTML = "Aim and scale all vectors on the diagram, then calculate the magnitude of momentum for the purple and orange pieces to the nearest 1 decimal place.";
+        calcCard.style.display = 'block';
+      } else {
+        lblStageBadge.textContent = "Stage 3: Mass & Velocities";
+        lblInstruction.innerHTML = "Calculate the momentum and velocities for each piece to the nearest 1 decimal place, and balance the diagram.";
+        calcCard.style.display = 'block';
+      }
+      lblStageProgress.textContent = `Stage Progress: ${stageCorrectInRow}/2 to advance`;
+
       const quad = QUAD_CONFIGS[Math.floor(Math.random() * QUAD_CONFIGS.length)];
       // Whole number angles: 25°, 30°, ... 65°
       const angleDeg = Math.floor(Math.random() * 9) * 5 + 25; 
       const angleRad = (angleDeg * Math.PI) / 180;
-      const momentumVal = (Math.floor(Math.random() * 80) + 120) / 10; // 12.0 to 19.9 kg·m/s
+      const angleFormatted = `${angleDeg.toFixed(1)}°`;
+
+      let momentumA, massA, velA, massB, massC, pB, pC, velB, velC;
+
+      if (stage === 3) {
+        massA = (Math.floor(Math.random() * 20) + 10) / 10; // 1.0 to 2.9 kg
+        velA = (Math.floor(Math.random() * 40) + 50) / 10;  // 5.0 to 8.9 m/s
+        momentumA = massA * velA;
+        massB = (Math.floor(Math.random() * 15) + 12) / 10; // 1.2 to 2.6 kg
+        massC = (Math.floor(Math.random() * 15) + 12) / 10; // 1.2 to 2.6 kg
+        pB = momentumA * Math.sin(angleRad);
+        pC = momentumA * Math.cos(angleRad);
+        velB = pB / massB;
+        velC = pC / massC;
+      } else {
+        momentumA = (Math.floor(Math.random() * 80) + 120) / 10; // 12.0 to 19.9 kg⋅m/s
+        pB = momentumA * Math.sin(angleRad);
+        pC = momentumA * Math.cos(angleRad);
+      }
 
       currentProblem = {
         id: Math.floor(10000000 + Math.random() * 90000000),
-        momentum: momentumVal,
-        angleDeg: angleDeg,
-        quad: quad,
+        angleDeg,
+        angleFormatted,
+        quad,
+        momentumA,
+        pB,
+        pC,
+        massA, velA, massB, massC, velB, velC,
         targetA: {
           x: quad.xSign * ANCHOR_LENGTH * Math.cos(angleRad),
           y: quad.ySign * ANCHOR_LENGTH * Math.sin(angleRad),
-          bearingStr: `[${angleDeg}° ${quad.name}]`
+          bearingStr: `[${angleFormatted} ${quad.name}]`
         },
         targetB: {
           dir: quad.bDir,
@@ -372,13 +598,24 @@
       };
 
       lblProblemId.textContent = `ID: ${currentProblem.id}`;
-      lblStem.innerHTML = `A stationary watermelon explodes into three pieces.<br>
-      • <strong>The blue piece</strong> flies off with momentum <strong>${momentumVal.toFixed(1)} kg·m/s ${currentProblem.targetA.bearingStr}</strong>.<br>
-      • <strong>The purple piece</strong> flies straight <strong>${currentProblem.targetB.dir}</strong>.<br>
-      • <strong>The orange piece</strong> flies straight <strong>${currentProblem.targetC.dir}</strong>.`;
+
+      // Prompt wording updated with nowrap span
+      if (stage === 1 || stage === 2) {
+        lblStem.innerHTML = `A stationary watermelon explodes into three pieces.<br>
+        • <strong>The blue piece</strong> flies off with <span class="nowrap"><strong>${momentumA.toFixed(1)} kg⋅m/s [${angleFormatted} ${quad.name}]</strong></span> of momentum.<br>
+        • <strong>The purple piece</strong> flies straight <strong>${currentProblem.targetB.dir}</strong>.<br>
+        • <strong>The orange piece</strong> flies straight <strong>${currentProblem.targetC.dir}</strong>.`;
+      } else {
+        lblStem.innerHTML = `A stationary watermelon explodes into three pieces.<br>
+        • <strong>The blue piece</strong> (mass <strong>${massA.toFixed(1)} kg</strong>) flies off at <span class="nowrap"><strong>${velA.toFixed(1)} m/s [${angleFormatted} ${quad.name}]</strong></span>.<br>
+        • <strong>The purple piece</strong> (mass <strong>${massB.toFixed(1)} kg</strong>) flies straight <strong>${currentProblem.targetB.dir}</strong>.<br>
+        • <strong>The orange piece</strong> (mass <strong>${massC.toFixed(1)} kg</strong>) flies straight <strong>${currentProblem.targetC.dir}</strong>.`;
+      }
+
+      buildInputs();
 
       // Reset to 120° symmetrical start
-      stateA.angleRad = Math.PI / 2; // South
+      stateA.angleRad = Math.PI / 2;
       updateVecA();
 
       const rStub = 50;
@@ -389,6 +626,51 @@
       stateC.x = rStub * Math.cos((330 * Math.PI) / 180);
       stateC.y = rStub * Math.sin((330 * Math.PI) / 180);
       updateVecC();
+    }
+
+    function buildInputs() {
+      inputsGrid.innerHTML = '';
+      if (stage === 1) return;
+
+      if (stage === 2) {
+        inputsGrid.innerHTML = `
+          <div class="input-group">
+            <label class="label-purple">Purple Piece Momentum (p):</label>
+            <input type="text" id="inpPb" placeholder="e.g. 8.3 kg⋅m/s" autocomplete="off" />
+          </div>
+          <div class="input-group">
+            <label class="label-orange">Orange Piece Momentum (p):</label>
+            <input type="text" id="inpPc" placeholder="e.g. 11.9 kg⋅m/s" autocomplete="off" />
+          </div>
+        `;
+      } else if (stage === 3) {
+        inputsGrid.innerHTML = `
+          <div class="input-group full-width">
+            <label class="label-blue">Blue Piece Momentum (p):</label>
+            <input type="text" id="inpPa" placeholder="e.g. 14.5 kg⋅m/s" autocomplete="off" />
+          </div>
+          <div class="input-group">
+            <label class="label-purple">Purple Momentum (p):</label>
+            <input type="text" id="inpPb" placeholder="e.g. 8.3 kg⋅m/s" autocomplete="off" />
+          </div>
+          <div class="input-group">
+            <label class="label-orange">Orange Momentum (p):</label>
+            <input type="text" id="inpPc" placeholder="e.g. 11.9 kg⋅m/s" autocomplete="off" />
+          </div>
+          <div class="input-group">
+            <label class="label-purple">Purple Velocity (v):</label>
+            <input type="text" id="inpVb" placeholder="e.g. 5.5 m/s" autocomplete="off" />
+          </div>
+          <div class="input-group">
+            <label class="label-orange">Orange Velocity (v):</label>
+            <input type="text" id="inpVc" placeholder="e.g. 7.9 m/s" autocomplete="off" />
+          </div>
+        `;
+      }
+
+      inputsGrid.querySelectorAll('input').forEach(inp => {
+        inp.addEventListener('focus', () => { lastFocusedInput = inp; });
+      });
     }
 
     function getPointerPos(e) {
@@ -454,7 +736,6 @@
       handleA.setAttribute('cx', ax);
       handleA.setAttribute('cy', ay);
 
-      // Ghost component projection lines and bars
       compBarX.setAttribute('x2', ax);
       compBarY.setAttribute('y2', ay);
       projLineX.setAttribute('x1', ax); projLineX.setAttribute('y1', 0);
@@ -462,9 +743,8 @@
       projLineY.setAttribute('x1', 0);  projLineY.setAttribute('y1', ay);
       projLineY.setAttribute('x2', ax); projLineY.setAttribute('y2', ay);
 
-      // Reference Angle relative to nearest horizontal axis (East or West)
       const refAngleRad = Math.atan2(Math.abs(ay), Math.abs(ax));
-      const refAngleDeg = Math.round((refAngleRad * 180) / Math.PI); // Whole number
+      const refAngleDeg = Math.round((refAngleRad * 180) / Math.PI);
 
       if (Math.abs(ax) > 0.01 && Math.abs(ay) > 0.01) {
         const startX = ax >= 0 ? ARC_RADIUS : -ARC_RADIUS;
@@ -487,8 +767,6 @@
         angleArc.style.display = 'none';
         angleLabel.style.display = 'none';
       }
-
-      hudA.textContent = `Blue piece angle: ${refAngleDeg}°`;
     }
 
     function updateVecB() {
@@ -523,19 +801,119 @@
       ghostC.style.display = 'none';
     }
 
+    // Parses quantity, validates units and rounding precision (to nearest 0.1)
+    function validateQuantity(inputElem, expectedUnit, fieldLabel, expectedVal) {
+      inputElem.classList.remove('field-warn');
+      const raw = inputElem.value.trim();
+      if (!raw) {
+        inputElem.classList.add('field-warn');
+        return { empty: true, msg: `Please fill in a value for <strong>${fieldLabel}</strong>.` };
+      }
+
+      const match = raw.match(/^([+-]?\d+(?:\.\d+)?)/);
+      if (!match) {
+        inputElem.classList.add('field-warn');
+        return { error: true, msg: `"${raw}" does not start with a valid number.` };
+      }
+
+      const numStr = match[1];
+      const val = parseFloat(numStr);
+      const rest = raw.slice(match[0].length);
+
+      // Normalize unit symbols: ·, •, and ⋅ are treated equally
+      const normalizedRest = rest.replace(/[·•]/g, '⋅').trim();
+      const normalizedExpected = expectedUnit.replace(/[·•]/g, '⋅');
+
+      if (!normalizedRest) {
+        inputElem.classList.add('field-warn');
+        return {
+          unitWarn: true,
+          msg: `Missing unit on <strong>${fieldLabel}</strong>! You must write <strong>${expectedUnit}</strong> (click the [ · ] button).`
+        };
+      }
+
+      if (normalizedRest !== normalizedExpected) {
+        inputElem.classList.add('field-warn');
+        return {
+          unitWarn: true,
+          msg: `Unit warning on <strong>${fieldLabel}</strong>: You entered "<em>${rest.trim()}</em>". The required unit is <strong>${expectedUnit}</strong>. Please check spacing and use the [ · ] button.`
+        };
+      }
+
+      // 1. Check for excess decimal places (e.g. 8.21 instead of 8.2 or 8.3)
+      if (numStr.includes('.') && numStr.split('.')[1].length > 1) {
+        inputElem.classList.add('field-warn');
+        return {
+          roundingWarn: true,
+          msg: `Please round <strong>${fieldLabel}</strong> to the nearest <strong>1 decimal place</strong> (tenths, e.g. <strong>${val.toFixed(1)}</strong> instead of <strong>${numStr}</strong>).`
+        };
+      }
+
+      // 2. Check for rounding/truncation slips (e.g. entered 11.8 instead of 11.9)
+      const expectedRounded = Math.round(expectedVal * 10) / 10;
+      const diff = Math.abs(val - expectedRounded);
+      if (diff > 0.001 && diff <= 0.15) {
+        inputElem.classList.add('field-warn');
+        return {
+          roundingWarn: true,
+          msg: `Check your rounding on <strong>${fieldLabel}</strong>: Your value (<strong>${val}</strong>) is very close, but check your rounding rules for the tenths place.`
+        };
+      }
+
+      return { valid: true, val, expectedRounded };
+    }
+
     btnCheck.addEventListener('click', () => {
+      warningCard.style.display = 'none';
+
+      // Validate inputs for Stage 2 & 3
+      let parsed = {};
+      if (stage >= 2) {
+        const inpPb = document.getElementById('inpPb');
+        const inpPc = document.getElementById('inpPc');
+        const resPb = validateQuantity(inpPb, "kg⋅m/s", "Purple Piece Momentum", currentProblem.pB);
+        const resPc = validateQuantity(inpPc, "kg⋅m/s", "Orange Piece Momentum", currentProblem.pC);
+
+        const anyWarn = [resPb, resPc].find(r => r.unitWarn || r.roundingWarn || r.error || r.empty);
+        if (anyWarn) {
+          warningCard.innerHTML = `⚠️ <strong>Check Your Entry:</strong> ${anyWarn.msg} <br><small>No incorrect attempt was recorded on your score. Please adjust your entry and check again.</small>`;
+          warningCard.style.display = 'block';
+          return; // Allow student to correct without penalty
+        }
+        parsed.pb = resPb.val;
+        parsed.pc = resPc.val;
+      }
+
+      if (stage === 3) {
+        const inpPa = document.getElementById('inpPa');
+        const inpVb = document.getElementById('inpVb');
+        const inpVc = document.getElementById('inpVc');
+        const resPa = validateQuantity(inpPa, "kg⋅m/s", "Blue Piece Momentum", currentProblem.momentumA);
+        const resVb = validateQuantity(inpVb, "m/s", "Purple Velocity", currentProblem.velB);
+        const resVc = validateQuantity(inpVc, "m/s", "Orange Velocity", currentProblem.velC);
+
+        const anyWarn = [resPa, resVb, resVc].find(r => r.unitWarn || r.roundingWarn || r.error || r.empty);
+        if (anyWarn) {
+          warningCard.innerHTML = `⚠️ <strong>Check Your Entry:</strong> ${anyWarn.msg} <br><small>No incorrect attempt was recorded on your score. Please adjust your entry and check again.</small>`;
+          warningCard.style.display = 'block';
+          return;
+        }
+        parsed.pa = resPa.val;
+        parsed.vb = resVb.val;
+        parsed.vc = resVc.val;
+      }
+
+      // Check Vector Diagram
       const targetA = currentProblem.targetA;
       const targetB = currentProblem.targetB;
       const targetC = currentProblem.targetC;
 
-      // 1. Check Blue Piece Angle (within ±3.5°)
       const curAx = ANCHOR_LENGTH * Math.cos(stateA.angleRad);
       const curAy = ANCHOR_LENGTH * Math.sin(stateA.angleRad);
       const dotA = (curAx * targetA.x + curAy * targetA.y) / (ANCHOR_LENGTH * ANCHOR_LENGTH);
       const aAngleDiffDeg = (Math.acos(Math.max(-1, Math.min(1, dotA))) * 180) / Math.PI;
       const isAngleACorrect = aAngleDiffDeg <= 3.5;
 
-      // 2. Check Cardinal Directions
       const bIsNorth = stateB.y < -15 && Math.abs(stateB.x) <= 8;
       const bIsSouth = stateB.y > 15 && Math.abs(stateB.x) <= 8;
       const isDirBCorrect = (targetB.dir === "North" && bIsNorth) || (targetB.dir === "South" && bIsSouth);
@@ -544,7 +922,6 @@
       const cIsWest = stateC.x < -15 && Math.abs(stateC.y) <= 8;
       const isDirCCorrect = (targetC.dir === "East" && cIsEast) || (targetC.dir === "West" && cIsWest);
 
-      // 3. Check Magnitudes (within 80% accuracy -> error <= 20%)
       const lenB = Math.hypot(stateB.x, stateB.y);
       const lenC = Math.hypot(stateC.x, stateC.y);
       const errB = Math.abs(lenB - targetB.len) / targetB.len;
@@ -552,17 +929,42 @@
       const isScaleBCorrect = errB <= 0.20;
       const isScaleCCorrect = errC <= 0.20;
 
-      const directionsPass = isAngleACorrect && isDirBCorrect && isDirCCorrect;
-      const magnitudesPass = isScaleBCorrect && isScaleCCorrect;
-      const isSuccess = directionsPass && magnitudesPass;
+      const diagramSuccess = isAngleACorrect && isDirBCorrect && isDirCCorrect && isScaleBCorrect && isScaleCCorrect;
+
+      // Check Numerical Solution (Exact match to 1 decimal place)
+      let calcsSuccess = true;
+      let calcErrors = [];
+
+      function checkMatch(actual, expected, label) {
+        const expectedRounded = Math.round(expected * 10) / 10;
+        if (Math.abs(actual - expectedRounded) > 0.05) {
+          calcsSuccess = false;
+          calcErrors.push(`${label} is incorrect`);
+        }
+      }
+
+      if (stage >= 2) {
+        checkMatch(parsed.pb, currentProblem.pB, "Purple momentum");
+        checkMatch(parsed.pc, currentProblem.pC, "Orange momentum");
+      }
+
+      if (stage === 3) {
+        checkMatch(parsed.pa, currentProblem.momentumA, "Blue momentum");
+        checkMatch(parsed.vb, currentProblem.velB, "Purple velocity");
+        checkMatch(parsed.vc, currentProblem.velC, "Orange velocity");
+      }
+
+      const overallSuccess = diagramSuccess && calcsSuccess;
 
       if (!attemptLogged) {
-        if (isSuccess) {
+        if (overallSuccess) {
           correctCount++;
           lblCorrect.textContent = correctCount;
+          stageCorrectInRow++;
         } else {
           incorrectCount++;
           lblIncorrect.textContent = incorrectCount;
+          stageCorrectInRow = 0;
         }
         attemptLogged = true;
       }
@@ -570,31 +972,44 @@
       showGhosts();
 
       feedbackCard.style.display = 'block';
-      if (isSuccess) {
+      if (overallSuccess) {
         feedbackCard.className = 'feedback-card success';
-        feedbackCard.innerHTML = `<strong>Superb! System Balanced (&Sigma;p = 0)</strong><br>
-        All momentum vectors are oriented correctly and scaled within the 80% accuracy threshold.`;
+        let successMsg = `<strong>Superb!</strong><br>Vectors and calculations are all accurate.`;
+        
+        if (stageCorrectInRow >= 2 && stage < 3) {
+          stage++;
+          stageCorrectInRow = 0;
+          successMsg += `<br>🎉 <strong>Stage Unlocked! Advancing to Stage ${stage}!</strong>`;
+        }
+
+        feedbackCard.innerHTML = successMsg;
         btnCheck.style.display = 'none';
         btnNext.style.display = 'block';
       } else {
         feedbackCard.className = 'feedback-card error';
-        let hint = "<strong>Not quite balanced yet:</strong><br>";
-        if (!isAngleACorrect) hint += `• <strong>The blue piece</strong> is not aimed correctly. Check your quadrant and bearing ${targetA.bearingStr}.<br>`;
-        if (!isDirBCorrect) hint += `• <strong>The purple piece</strong> must point directly <strong>${targetB.dir}</strong>.<br>`;
-        if (!isDirCCorrect) hint += `• <strong>The orange piece</strong> must point directly <strong>${targetC.dir}</strong>.<br>`;
-        if (directionsPass && !magnitudesPass) {
-          hint += `• Directions are correct! Use the blue dashed component lines on the axes to match lengths with the dashed ghosts.`;
+        let hint = "<strong>Not quite complete yet:</strong><br>";
+        if (!isAngleACorrect) hint += `• <strong>Blue piece</strong> must be aimed at bearing ${targetA.bearingStr}.<br>`;
+        if (!isDirBCorrect) hint += `• <strong>Purple piece</strong> must point directly <strong>${targetB.dir}</strong>.<br>`;
+        if (!isDirCCorrect) hint += `• <strong>Orange piece</strong> must point directly <strong>${targetC.dir}</strong>.<br>`;
+        if ((isDirBCorrect && isDirCCorrect) && (!isScaleBCorrect || !isScaleCCorrect)) {
+          hint += `• Scale purple and orange lengths to match the dashed ghost component bars.<br>`;
+        }
+        if (calcErrors.length > 0) {
+          hint += `• Calculations: ${calcErrors.join(", ")}.<br>`;
         }
         feedbackCard.innerHTML = hint;
         btnCheck.style.display = 'none';
         btnTryAgain.style.display = 'block';
         btnNext.style.display = 'block';
       }
+
+      lblStageProgress.textContent = `Stage Progress: ${stageCorrectInRow}/2 to advance`;
     });
 
     btnTryAgain.addEventListener('click', () => {
       hideGhosts();
       feedbackCard.style.display = 'none';
+      warningCard.style.display = 'none';
       btnTryAgain.style.display = 'none';
       btnNext.style.display = 'none';
       btnCheck.style.display = 'block';
