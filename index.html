@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Conservation of Momentum: 2D Explosions</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: #f1f5f9;
+      color: #1e293b;
+      display: flex;
+      justify-content: center;
+      padding: 24px 16px;
+    }
+
+    .card {
+      background: #ffffff;
+      width: 100%;
+      max-width: 680px;
+      border-radius: 18px;
+      border: 1px solid #e2e8f0;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.03);
+      padding: 24px 28px;
+    }
+
+    h1 {
+      font-size: 1.55rem;
+      font-weight: 800;
+      text-align: center;
+      color: #1e293b;
+      margin-bottom: 8px;
+    }
+
+    .scoreboard {
+      display: flex;
+      justify-content: center;
+      gap: 32px;
+      font-size: 1.15rem;
+      font-weight: 800;
+      margin-bottom: 16px;
+    }
+    .score-correct { color: #16a34a; }
+    .score-incorrect { color: #ea580c; }
+
+    /* Canvas Stage Box */
+    .stage-box {
+      position: relative;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 14px;
+      overflow: hidden;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 8px;
+    }
+
+    .problem-id {
+      position: absolute;
+      top: 10px;
+      right: 14px;
+      font-size: 0.75rem;
+      font-family: monospace;
+      color: #94a3b8;
+      font-weight: 600;
+      user-select: none;
+    }
+
+    svg {
+      width: 100%;
+      max-width: 440px;
+      height: 400px;
+      touch-action: none;
+      user-select: none;
+    }
+
+    /* Grid & Axis styles */
+    .grid-circle { fill: none; stroke: #e2e8f0; stroke-width: 1; }
+    .axis-line { stroke: #cbd5e1; stroke-width: 1.5; stroke-dasharray: 4 4; }
+    .origin-dot { fill: #64748b; }
+    .compass-label { font-size: 11px; fill: #94a3b8; font-weight: 700; text-anchor: middle; dominant-baseline: central; }
+
+    /* Arrows */
+    .arrow-line { stroke-width: 4; stroke-linecap: round; }
+    .ghost-line { stroke-width: 3; stroke-dasharray: 5 4; fill: none; opacity: 0.6; }
+    
+    .vec-a { stroke: #0284c7; } /* Blue */
+    .vec-b { stroke: #9333ea; } /* Purple */
+    .vec-c { stroke: #ea580c; } /* Orange */
+
+    /* Component Projections */
+    .comp-proj { stroke: #38bdf8; stroke-width: 1.5; stroke-dasharray: 3 3; opacity: 0.85; }
+    .comp-bar { stroke: #0284c7; stroke-width: 3; stroke-linecap: round; opacity: 0.35; }
+
+    /* Reference Angle Arc */
+    .angle-arc { fill: none; stroke: #16a34a; stroke-width: 2.5; stroke-linecap: round; }
+    .angle-label { font-size: 11px; font-weight: 800; fill: #16a34a; dominant-baseline: central; }
+
+    /* Draggable Handles */
+    .handle {
+      fill: #ffffff;
+      stroke-width: 3;
+      cursor: grab;
+      transition: r 0.15s ease;
+    }
+    .handle:hover { r: 9; }
+    .handle:active { cursor: grabbing; r: 10; }
+    .handle-a { stroke: #0284c7; }
+    .handle-b { stroke: #9333ea; }
+    .handle-c { stroke: #ea580c; }
+
+    /* Live HUD */
+    .hud-box {
+      position: absolute;
+      bottom: 12px;
+      left: 14px;
+      background: rgba(255, 255, 255, 0.95);
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 6px 12px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: #0369a1;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.04);
+      pointer-events: none;
+    }
+
+    /* Problem Description */
+    .stem-card {
+      background: #f1f5f9;
+      border-radius: 10px;
+      padding: 14px 18px;
+      margin-top: 14px;
+      font-size: 1rem;
+      line-height: 1.5;
+      color: #1e293b;
+    }
+
+    /* Peach Instruction Banner */
+    .instruction-banner {
+      background: #ffedd5;
+      color: #9a3412;
+      border-radius: 10px;
+      padding: 12px 16px;
+      font-size: 0.95rem;
+      font-weight: 700;
+      text-align: center;
+      margin: 14px 0;
+      line-height: 1.4;
+    }
+
+    /* Buttons & Feedback */
+    .actions {
+      display: flex;
+      gap: 12px;
+      margin-top: 16px;
+    }
+
+    button {
+      flex: 1;
+      padding: 12px 20px;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: 700;
+      border: none;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .btn-check { background: #2563eb; color: white; }
+    .btn-check:hover { background: #1d4ed8; }
+    .btn-next { background: #16a34a; color: white; }
+    .btn-next:hover { background: #15803d; }
+    .btn-try { background: #64748b; color: white; }
+    .btn-try:hover { background: #475569; }
+
+    .feedback-card {
+      display: none;
+      margin-top: 14px;
+      padding: 14px 18px;
+      border-radius: 10px;
+      font-size: 0.95rem;
+      line-height: 1.5;
+      animation: fadeIn 0.2s ease-in-out;
+    }
+    .feedback-card.success { background: #dcfce7; color: #14532d; border: 1px solid #bbf7d0; }
+    .feedback-card.error { background: #fee2e2; color: #991b1b; border: 1px solid #fecaca; }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="card">
+    <h1>Conservation of Momentum: 2D Explosions</h1>
+    
+    <div class="scoreboard">
+      <span class="score-correct">Correct: <span id="lblCorrect">0</span></span>
+      <span class="score-incorrect">Incorrect: <span id="lblIncorrect">0</span></span>
+    </div>
+
+    <div class="stage-box">
+      <div class="problem-id" id="lblProblemId">ID: 84920195</div>
+      
+      <svg id="svgCanvas" viewBox="-200 -200 400 400">
+        <defs>
+          <!-- Arrow Markers -->
+          <marker id="arrow-a" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M 0 1.5 L 10 5 L 0 8.5 z" fill="#0284c7" />
+          </marker>
+          <marker id="arrow-b" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M 0 1.5 L 10 5 L 0 8.5 z" fill="#9333ea" />
+          </marker>
+          <marker id="arrow-c" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M 0 1.5 L 10 5 L 0 8.5 z" fill="#ea580c" />
+          </marker>
+
+          <!-- Ghost Markers -->
+          <marker id="ghost-a" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M 0 1.5 L 10 5 L 0 8.5 z" fill="#0284c7" opacity="0.6"/>
+          </marker>
+          <marker id="ghost-b" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M 0 1.5 L 10 5 L 0 8.5 z" fill="#9333ea" opacity="0.6"/>
+          </marker>
+          <marker id="ghost-c" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M 0 1.5 L 10 5 L 0 8.5 z" fill="#ea580c" opacity="0.6"/>
+          </marker>
+        </defs>
+
+        <!-- Subtle Concentric Grid -->
+        <circle cx="0" cy="0" r="50" class="grid-circle" />
+        <circle cx="0" cy="0" r="100" class="grid-circle" />
+        <circle cx="0" cy="0" r="150" class="grid-circle" />
+
+        <!-- Axes -->
+        <line x1="-185" y1="0" x2="185" y2="0" class="axis-line" />
+        <line x1="0" y1="-185" x2="0" y2="185" class="axis-line" />
+        
+        <!-- Compass Labels -->
+        <text x="188" y="0" class="compass-label">E</text>
+        <text x="-188" y="0" class="compass-label">W</text>
+        <text x="0" y="-188" class="compass-label">N</text>
+        <text x="0" y="188" class="compass-label">S</text>
+
+        <!-- Ghost Component Bars & Drop Lines for the Blue Piece -->
+        <line id="compBarX" x1="0" y1="0" x2="0" y2="0" class="comp-bar" />
+        <line id="compBarY" x1="0" y1="0" x2="0" y2="0" class="comp-bar" />
+        <line id="projLineX" x1="0" y1="0" x2="0" y2="0" class="comp-proj" />
+        <line id="projLineY" x1="0" y1="0" x2="0" y2="0" class="comp-proj" />
+
+        <!-- Reference Angle Arc & Label -->
+        <path id="angleArc" d="" class="angle-arc" />
+        <text id="angleLabel" x="0" y="0" class="angle-label"></text>
+
+        <!-- Ghost Target Vectors (Shown upon Check) -->
+        <line id="ghostA" x1="0" y1="0" x2="0" y2="0" class="ghost-line vec-a" marker-end="url(#ghost-a)" display="none" />
+        <line id="ghostB" x1="0" y1="0" x2="0" y2="0" class="ghost-line vec-b" marker-end="url(#ghost-b)" display="none" />
+        <line id="ghostC" x1="0" y1="0" x2="0" y2="0" class="ghost-line vec-c" marker-end="url(#ghost-c)" display="none" />
+
+        <!-- Student Vectors -->
+        <!-- Blue Piece: Diagonal (Fixed scale length) -->
+        <line id="vecA" x1="0" y1="0" x2="0" y2="140" class="arrow-line vec-a" marker-end="url(#arrow-a)" />
+        <circle id="handleA" cx="0" cy="140" r="7.5" class="handle handle-a" />
+
+        <!-- Purple Piece: Vertical (Stretchable) -->
+        <line id="vecB" x1="0" y1="0" x2="-43" y2="-25" class="arrow-line vec-b" marker-end="url(#arrow-b)" />
+        <circle id="handleB" cx="-43" cy="-25" r="7.5" class="handle handle-b" />
+
+        <!-- Orange Piece: Horizontal (Stretchable) -->
+        <line id="vecC" x1="0" y1="0" x2="43" y2="-25" class="arrow-line vec-c" marker-end="url(#arrow-c)" />
+        <circle id="handleC" cx="43" cy="-25" r="7.5" class="handle handle-c" />
+
+        <!-- Origin Dot -->
+        <circle cx="0" cy="0" r="4.5" class="origin-dot" />
+      </svg>
+
+      <div class="hud-box" id="hudA">Blue piece angle: 90°</div>
+    </div>
+
+    <div class="stem-card" id="lblStem">Loading problem...</div>
+
+    <div class="instruction-banner">
+      Aim the blue piece to the specified angle. Use its ghost component guides to scale and balance the other pieces within 80% accuracy.
+    </div>
+
+    <div class="actions">
+      <button class="btn-check" id="btnCheck">Check Diagram</button>
+      <button class="btn-try" id="btnTryAgain" style="display:none;">Try Again</button>
+      <button class="btn-next" id="btnNext" style="display:none;">Next Problem</button>
+    </div>
+
+    <div class="feedback-card" id="feedbackCard"></div>
+  </div>
+
+  <script>
+    const ANCHOR_LENGTH = 140;
+    const SNAP_TOLERANCE_DEG = 12;
+    const ARC_RADIUS = 38;
+
+    let correctCount = 0;
+    let incorrectCount = 0;
+    let currentProblem = null;
+    let attemptLogged = false;
+
+    // Vectors State (SVG coordinates: +x = East, +y = South)
+    let stateA = { angleRad: Math.PI / 2 };
+    let stateB = { x: -43, y: -25 };
+    let stateC = { x: 43, y: -25 };
+    let activeDrag = null;
+
+    // DOM Elements
+    const svg = document.getElementById('svgCanvas');
+    const vecA = document.getElementById('vecA'), handleA = document.getElementById('handleA'), hudA = document.getElementById('hudA');
+    const vecB = document.getElementById('vecB'), handleB = document.getElementById('handleB');
+    const vecC = document.getElementById('vecC'), handleC = document.getElementById('handleC');
+    const compBarX = document.getElementById('compBarX'), compBarY = document.getElementById('compBarY');
+    const projLineX = document.getElementById('projLineX'), projLineY = document.getElementById('projLineY');
+    const angleArc = document.getElementById('angleArc'), angleLabel = document.getElementById('angleLabel');
+    const ghostA = document.getElementById('ghostA'), ghostB = document.getElementById('ghostB'), ghostC = document.getElementById('ghostC');
+    const lblStem = document.getElementById('lblStem'), lblProblemId = document.getElementById('lblProblemId');
+    const lblCorrect = document.getElementById('lblCorrect'), lblIncorrect = document.getElementById('lblIncorrect');
+    const btnCheck = document.getElementById('btnCheck'), btnTryAgain = document.getElementById('btnTryAgain'), btnNext = document.getElementById('btnNext');
+    const feedbackCard = document.getElementById('feedbackCard');
+
+    const QUAD_CONFIGS = [
+      { name: "N of E", xSign: 1,  ySign: -1, bDir: "South", cDir: "West" },
+      { name: "S of E", xSign: 1,  ySign: 1,  bDir: "North", cDir: "West" },
+      { name: "N of W", xSign: -1, ySign: -1, bDir: "South", cDir: "East" },
+      { name: "S of W", xSign: -1, ySign: 1,  bDir: "North", cDir: "East" }
+    ];
+
+    function initProblem() {
+      attemptLogged = false;
+      feedbackCard.style.display = 'none';
+      btnCheck.style.display = 'block';
+      btnTryAgain.style.display = 'none';
+      btnNext.style.display = 'none';
+      hideGhosts();
+
+      const quad = QUAD_CONFIGS[Math.floor(Math.random() * QUAD_CONFIGS.length)];
+      // Whole number angles: 25°, 30°, ... 65°
+      const angleDeg = Math.floor(Math.random() * 9) * 5 + 25; 
+      const angleRad = (angleDeg * Math.PI) / 180;
+      const momentumVal = (Math.floor(Math.random() * 80) + 120) / 10; // 12.0 to 19.9 kg·m/s
+
+      currentProblem = {
+        id: Math.floor(10000000 + Math.random() * 90000000),
+        momentum: momentumVal,
+        angleDeg: angleDeg,
+        quad: quad,
+        targetA: {
+          x: quad.xSign * ANCHOR_LENGTH * Math.cos(angleRad),
+          y: quad.ySign * ANCHOR_LENGTH * Math.sin(angleRad),
+          bearingStr: `[${angleDeg}° ${quad.name}]`
+        },
+        targetB: {
+          dir: quad.bDir,
+          len: ANCHOR_LENGTH * Math.sin(angleRad),
+          x: 0,
+          y: (quad.bDir === "North" ? -1 : 1) * (ANCHOR_LENGTH * Math.sin(angleRad))
+        },
+        targetC: {
+          dir: quad.cDir,
+          len: ANCHOR_LENGTH * Math.cos(angleRad),
+          x: (quad.cDir === "West" ? -1 : 1) * (ANCHOR_LENGTH * Math.cos(angleRad)),
+          y: 0
+        }
+      };
+
+      lblProblemId.textContent = `ID: ${currentProblem.id}`;
+      lblStem.innerHTML = `A stationary watermelon explodes into three pieces.<br>
+      • <strong>The blue piece</strong> flies off with momentum <strong>${momentumVal.toFixed(1)} kg·m/s ${currentProblem.targetA.bearingStr}</strong>.<br>
+      • <strong>The purple piece</strong> flies straight <strong>${currentProblem.targetB.dir}</strong>.<br>
+      • <strong>The orange piece</strong> flies straight <strong>${currentProblem.targetC.dir}</strong>.`;
+
+      // Reset to 120° symmetrical start
+      stateA.angleRad = Math.PI / 2; // South
+      updateVecA();
+
+      const rStub = 50;
+      stateB.x = rStub * Math.cos((210 * Math.PI) / 180);
+      stateB.y = rStub * Math.sin((210 * Math.PI) / 180);
+      updateVecB();
+
+      stateC.x = rStub * Math.cos((330 * Math.PI) / 180);
+      stateC.y = rStub * Math.sin((330 * Math.PI) / 180);
+      updateVecC();
+    }
+
+    function getPointerPos(e) {
+      const rect = svg.getBoundingClientRect();
+      const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+      const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+      return {
+        x: (clientX - rect.left) * (400 / rect.width) - 200,
+        y: (clientY - rect.top) * (400 / rect.height) - 200
+      };
+    }
+
+    function setupDrag(handle, key) {
+      handle.addEventListener('pointerdown', (e) => {
+        activeDrag = key;
+        handle.setPointerCapture(e.pointerId);
+      });
+    }
+
+    setupDrag(handleA, 'A');
+    setupDrag(handleB, 'B');
+    setupDrag(handleC, 'C');
+
+    window.addEventListener('pointermove', (e) => {
+      if (!activeDrag) return;
+      const pos = getPointerPos(e);
+
+      if (activeDrag === 'A') {
+        stateA.angleRad = Math.atan2(pos.y, pos.x);
+        updateVecA();
+      } else if (activeDrag === 'B' || activeDrag === 'C') {
+        let len = Math.hypot(pos.x, pos.y);
+        len = Math.max(30, Math.min(185, len));
+        let angleDeg = (Math.atan2(pos.y, pos.x) * 180) / Math.PI;
+
+        const cardinals = [0, 90, 180, -90, -180];
+        for (let card of cardinals) {
+          if (Math.abs(angleDeg - card) <= SNAP_TOLERANCE_DEG) {
+            angleDeg = card;
+            break;
+          }
+        }
+
+        const rad = (angleDeg * Math.PI) / 180;
+        const targetState = (activeDrag === 'B') ? stateB : stateC;
+        targetState.x = len * Math.cos(rad);
+        targetState.y = len * Math.sin(rad);
+
+        if (activeDrag === 'B') updateVecB();
+        else updateVecC();
+      }
+    });
+
+    window.addEventListener('pointerup', () => { activeDrag = null; });
+    window.addEventListener('pointercancel', () => { activeDrag = null; });
+
+    function updateVecA() {
+      const ax = ANCHOR_LENGTH * Math.cos(stateA.angleRad);
+      const ay = ANCHOR_LENGTH * Math.sin(stateA.angleRad);
+
+      vecA.setAttribute('x2', ax);
+      vecA.setAttribute('y2', ay);
+      handleA.setAttribute('cx', ax);
+      handleA.setAttribute('cy', ay);
+
+      // Ghost component projection lines and bars
+      compBarX.setAttribute('x2', ax);
+      compBarY.setAttribute('y2', ay);
+      projLineX.setAttribute('x1', ax); projLineX.setAttribute('y1', 0);
+      projLineX.setAttribute('x2', ax); projLineX.setAttribute('y2', ay);
+      projLineY.setAttribute('x1', 0);  projLineY.setAttribute('y1', ay);
+      projLineY.setAttribute('x2', ax); projLineY.setAttribute('y2', ay);
+
+      // Reference Angle relative to nearest horizontal axis (East or West)
+      const refAngleRad = Math.atan2(Math.abs(ay), Math.abs(ax));
+      const refAngleDeg = Math.round((refAngleRad * 180) / Math.PI); // Whole number
+
+      if (Math.abs(ax) > 0.01 && Math.abs(ay) > 0.01) {
+        const startX = ax >= 0 ? ARC_RADIUS : -ARC_RADIUS;
+        const startY = 0;
+        const endX = ARC_RADIUS * Math.cos(stateA.angleRad);
+        const endY = ARC_RADIUS * Math.sin(stateA.angleRad);
+
+        const sweepFlag = (Math.sign(ax) * Math.sin(stateA.angleRad) > 0) ? 1 : 0;
+        angleArc.setAttribute('d', `M ${startX} ${startY} A ${ARC_RADIUS} ${ARC_RADIUS} 0 0 ${sweepFlag} ${endX} ${endY}`);
+        angleArc.style.display = 'inline';
+
+        const labelR = ARC_RADIUS + 16;
+        const labelX = (ax >= 0 ? 1 : -1) * labelR * Math.cos(refAngleRad / 2);
+        const labelY = (ay >= 0 ? 1 : -1) * labelR * Math.sin(refAngleRad / 2);
+        angleLabel.setAttribute('x', labelX);
+        angleLabel.setAttribute('y', labelY);
+        angleLabel.textContent = `${refAngleDeg}°`;
+        angleLabel.style.display = 'inline';
+      } else {
+        angleArc.style.display = 'none';
+        angleLabel.style.display = 'none';
+      }
+
+      hudA.textContent = `Blue piece angle: ${refAngleDeg}°`;
+    }
+
+    function updateVecB() {
+      vecB.setAttribute('x2', stateB.x);
+      vecB.setAttribute('y2', stateB.y);
+      handleB.setAttribute('cx', stateB.x);
+      handleB.setAttribute('cy', stateB.y);
+    }
+
+    function updateVecC() {
+      vecC.setAttribute('x2', stateC.x);
+      vecC.setAttribute('y2', stateC.y);
+      handleC.setAttribute('cx', stateC.x);
+      handleC.setAttribute('cy', stateC.y);
+    }
+
+    function showGhosts() {
+      const { targetA, targetB, targetC } = currentProblem;
+      ghostA.setAttribute('x2', targetA.x); ghostA.setAttribute('y2', targetA.y);
+      ghostA.style.display = 'inline';
+
+      ghostB.setAttribute('x2', targetB.x); ghostB.setAttribute('y2', targetB.y);
+      ghostB.style.display = 'inline';
+
+      ghostC.setAttribute('x2', targetC.x); ghostC.setAttribute('y2', targetC.y);
+      ghostC.style.display = 'inline';
+    }
+
+    function hideGhosts() {
+      ghostA.style.display = 'none';
+      ghostB.style.display = 'none';
+      ghostC.style.display = 'none';
+    }
+
+    btnCheck.addEventListener('click', () => {
+      const targetA = currentProblem.targetA;
+      const targetB = currentProblem.targetB;
+      const targetC = currentProblem.targetC;
+
+      // 1. Check Blue Piece Angle (within ±3.5°)
+      const curAx = ANCHOR_LENGTH * Math.cos(stateA.angleRad);
+      const curAy = ANCHOR_LENGTH * Math.sin(stateA.angleRad);
+      const dotA = (curAx * targetA.x + curAy * targetA.y) / (ANCHOR_LENGTH * ANCHOR_LENGTH);
+      const aAngleDiffDeg = (Math.acos(Math.max(-1, Math.min(1, dotA))) * 180) / Math.PI;
+      const isAngleACorrect = aAngleDiffDeg <= 3.5;
+
+      // 2. Check Cardinal Directions
+      const bIsNorth = stateB.y < -15 && Math.abs(stateB.x) <= 8;
+      const bIsSouth = stateB.y > 15 && Math.abs(stateB.x) <= 8;
+      const isDirBCorrect = (targetB.dir === "North" && bIsNorth) || (targetB.dir === "South" && bIsSouth);
+
+      const cIsEast = stateC.x > 15 && Math.abs(stateC.y) <= 8;
+      const cIsWest = stateC.x < -15 && Math.abs(stateC.y) <= 8;
+      const isDirCCorrect = (targetC.dir === "East" && cIsEast) || (targetC.dir === "West" && cIsWest);
+
+      // 3. Check Magnitudes (within 80% accuracy -> error <= 20%)
+      const lenB = Math.hypot(stateB.x, stateB.y);
+      const lenC = Math.hypot(stateC.x, stateC.y);
+      const errB = Math.abs(lenB - targetB.len) / targetB.len;
+      const errC = Math.abs(lenC - targetC.len) / targetC.len;
+      const isScaleBCorrect = errB <= 0.20;
+      const isScaleCCorrect = errC <= 0.20;
+
+      const directionsPass = isAngleACorrect && isDirBCorrect && isDirCCorrect;
+      const magnitudesPass = isScaleBCorrect && isScaleCCorrect;
+      const isSuccess = directionsPass && magnitudesPass;
+
+      if (!attemptLogged) {
+        if (isSuccess) {
+          correctCount++;
+          lblCorrect.textContent = correctCount;
+        } else {
+          incorrectCount++;
+          lblIncorrect.textContent = incorrectCount;
+        }
+        attemptLogged = true;
+      }
+
+      showGhosts();
+
+      feedbackCard.style.display = 'block';
+      if (isSuccess) {
+        feedbackCard.className = 'feedback-card success';
+        feedbackCard.innerHTML = `<strong>Superb! System Balanced (&Sigma;p = 0)</strong><br>
+        All momentum vectors are oriented correctly and scaled within the 80% accuracy threshold.`;
+        btnCheck.style.display = 'none';
+        btnNext.style.display = 'block';
+      } else {
+        feedbackCard.className = 'feedback-card error';
+        let hint = "<strong>Not quite balanced yet:</strong><br>";
+        if (!isAngleACorrect) hint += `• <strong>The blue piece</strong> is not aimed correctly. Check your quadrant and bearing ${targetA.bearingStr}.<br>`;
+        if (!isDirBCorrect) hint += `• <strong>The purple piece</strong> must point directly <strong>${targetB.dir}</strong>.<br>`;
+        if (!isDirCCorrect) hint += `• <strong>The orange piece</strong> must point directly <strong>${targetC.dir}</strong>.<br>`;
+        if (directionsPass && !magnitudesPass) {
+          hint += `• Directions are correct! Use the blue dashed component lines on the axes to match lengths with the dashed ghosts.`;
+        }
+        feedbackCard.innerHTML = hint;
+        btnCheck.style.display = 'none';
+        btnTryAgain.style.display = 'block';
+        btnNext.style.display = 'block';
+      }
+    });
+
+    btnTryAgain.addEventListener('click', () => {
+      hideGhosts();
+      feedbackCard.style.display = 'none';
+      btnTryAgain.style.display = 'none';
+      btnNext.style.display = 'none';
+      btnCheck.style.display = 'block';
+    });
+
+    btnNext.addEventListener('click', initProblem);
+
+    // Initial Load
+    initProblem();
+  </script>
+</body>
+</html>
